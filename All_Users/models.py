@@ -60,8 +60,8 @@ class User(AbstractBaseUser):
     def get_full_name(self):
         return f"{self.First_Name} {self.Last_Name}"
 
-    def get_short_name(self):
-        return f"{self.First_Name}"
+    def get_phone(self):
+        return f"{self.Phone}"
 
     def __str__(self):             
         return f"{self.First_Name} {self.Last_Name}"
@@ -91,6 +91,14 @@ class Profile(models.Model):
     First_Name = models.CharField(max_length=50,blank=False, null=False)
     Last_Name = models.CharField(max_length=50,blank=False, null=False)
     is_validate = models.BooleanField(default=False,null=True,blank=True)
+    video = models.CharField(max_length=500,null=True,blank=True)
+    is_video_validated = models.BooleanField(default=False)
+    user = models.ManyToManyField(User)
+    request_receive = models.ManyToManyField(User,related_name="request_receive")
+    request_sent = models.ManyToManyField(User,related_name="request_sent")
+    bio = models.TextField(null=True,blank=True)
+    profile_pic = models.ImageField(upload_to="Profile_pics", null=True,blank=True)
+    is_private = models.BooleanField(default=True)
     
     def __str__(self):
         return f"{self.Phone}"

@@ -10,6 +10,10 @@ urlpatterns = [
     
     path('login', views.LoginAPI.as_view()),
     path('logout', LogoutView.as_view()),
-    # path('profile', views.ProfileView.as_view()),
+    # path('profile_update/<int:pk>', views.ProfileUpdateApiView.as_view()),
+    path('profile_update/<int:pk>', views.ProfilePartialUpdateView.as_view()),
+    path('profile', views.ProfileApiView.as_view()),
+
+    path('user_id/', views.UserIDView.as_view(), name='user-id'),
 ]
   

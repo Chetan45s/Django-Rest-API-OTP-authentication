@@ -3,11 +3,12 @@ from All_Users.otp import generate_otp, update_otp, get_otp
 from django.shortcuts import render, get_object_or_404,redirect
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import permissions
+from rest_framework import permissions,generics
 from All_Users.models import User,Profile
-from All_Users.serializer import RegisterSerializer,LoginUserSerializer, ProfileSerializers
+from All_Users.serializer import RegisterSerializer,LoginUserSerializer, ProfileSerializers, ProfilePrivateSerializers
 
-
+from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import UpdateModelMixin
 from django.contrib.auth import login
 from knox.views import LoginView as KnoxLoginView
 from knox.auth import TokenAuthentication
@@ -114,6 +115,9 @@ class Register(APIView):
                 serializer = RegisterSerializer(data = temp_data)
                 serializer.is_valid(raise_exception=True)
                 serializer.save()
+                prof_obj.First_Name = first
+                prof_obj.Last_Name = last
+                prof_obj.save()
             return Response({'message':"User Registered"},status=status.HTTP_200_OK)
         else:
             return Response({'message':"No Record of Phone"},status=status.HTTP_400_BAD_REQUEST)
@@ -128,22 +132,28 @@ class LoginAPI(KnoxLoginView):
         login(request, user)
         return super().post(request, format=None)
 
+class ProfileApiView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
 
-# class ProfileView(APIView):
-#     permission_classes = (IsAuthenticated,)
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializers
 
-#     def get(self, request):
-#         serialized_profile = ProfileSerializers(Profile.objects.filter(Phone=self.request.user.Phone),many=True).data
-#         serialized_appointment = AllBookingSerializers(AllBooking.objects.filter(User=self.request.user),many=True).data
-#         serialized_order_pending = OrderSerializers(Order.objects.filter(Patient=self.request.user,Ordered=False),many=True).data
-#         serialized_order_ongoing = OrderSerializers(Order.objects.filter(Patient=self.request.user,Ordered=True,service_status="Order Placed"),many=True).data
-#         serialized_order_history = OrderSerializers(Order.objects.filter(Patient=self.request.user,Ordered=True,service_status="Result Out"),many=True).data
-#         final_response = {
-#             'Personal Detail' : serialized_profile,
-#             'Appointments' : serialized_appointment,
-#             'Pending Order' : serialized_order_pending,
-#             'Ordered' : serialized_order_ongoing,
-#             'History' : serialized_order_history,
-#         }
-#         return Response(final_response)
-        # return Response(serialized_profile+serialized_appointment+serialized_order_pending+serialized_order_ongoing+serialized_order_history)
+class ProfileUpdateApiView(generics.UpdateAPIView):
+    permission_classes = (IsAuthenticated,)
+
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializers
+
+class ProfilePartialUpdateView(GenericAPIView, UpdateModelMixin):
+
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializers
+
+    def put(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+class UserIDView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        return Response({'userID': request.user.id}, status=status.HTTP_200_OK)

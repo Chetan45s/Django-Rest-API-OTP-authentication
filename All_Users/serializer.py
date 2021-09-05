@@ -49,4 +49,28 @@ class ProfileSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = "__all__"
+        fields = (
+            'id',
+            'Phone',
+            'First_Name',
+            'Last_Name',
+            'video',
+            'is_video_validated',
+            'bio',
+            'profile_pic',
+            'is_private',
+        )
+
+class ProfilePrivateSerializers(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Profile
+        fields = (
+            'id',
+            'Phone',
+            'First_Name',
+            'Last_Name',
+            'bio',
+            'profile_pic',
+            'is_private',
+        )
