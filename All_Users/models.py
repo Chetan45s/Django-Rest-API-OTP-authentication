@@ -97,7 +97,7 @@ class Profile(models.Model):
     request_receive = models.ManyToManyField(User,related_name="request_receive")
     request_sent = models.ManyToManyField(User,related_name="request_sent")
     bio = models.TextField(null=True,blank=True)
-    profile_pic = models.ImageField(upload_to="Profile_pics", null=True,blank=True)
+    profile_pic = models.ImageField(upload_to="Profile_pics", null=True,blank=True,default='images.png')
     is_private = models.BooleanField(default=True)
     
     def __str__(self):

@@ -70,6 +70,7 @@ class ProfilePrivateSerializers(serializers.ModelSerializer):
             'Phone',
             'First_Name',
             'Last_Name',
+            'is_video_validated',
             'bio',
             'profile_pic',
             'is_private',
