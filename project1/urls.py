@@ -6,8 +6,7 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',include('All_Users.urls')),
-    path('',include('friends.urls')),
+    path('',include('accounts.urls')),
 ]
 
 if settings.DEBUG:

@@ -1,30 +1,22 @@
 import re
-from All_Users.otp import generate_otp, update_otp, get_otp
-from django.shortcuts import render, get_object_or_404,redirect
+from accounts.otp import generate_otp, get_otp
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import permissions,generics
-from All_Users.models import User,Profile
-from All_Users.serializer import RegisterSerializer,LoginUserSerializer, ProfileSerializers, ProfilePrivateSerializers
+from rest_framework import permissions
+from accounts.models import User,Profile
+from accounts.serializer import RegisterSerializer,LoginUserSerializer, ProfileSerializers
 
-from rest_framework.generics import GenericAPIView
-from rest_framework.mixins import UpdateModelMixin
-from django.contrib.auth import get_user_model, login
+from django.contrib.auth import login
 from knox.views import LoginView as KnoxLoginView
-from knox.auth import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 from rest_framework import status 
 
 
-#File imports
-from friends.views import geUserModel,printStatement
-
-class send_otp(APIView):
+class sendOtp(APIView):
     def post(self, request):
 
-        phone = request.data.get('Phone',None)
-        print(phone)
+        phone = request.data.get('phone',None)
         if phone is not None:
             flag = bool(re.match('[\d]{10}', phone))
         else:
@@ -53,11 +45,11 @@ class send_otp(APIView):
         else:
             return Response({'message':"Invalid Phone Number"},status=status.HTTP_400_BAD_REQUEST)
 
-class verify_user(APIView):
+class validateOtp(APIView):
 
     def post(self, request):
 
-        phone = request.data.get('Phone',None)
+        phone = request.data.get('phone',None)
         otp = request.data.get('otp',None)
 
         if phone and otp:
@@ -85,25 +77,29 @@ class verify_user(APIView):
         else:
             return Response({'message':"Invalid Data"},status=status.HTTP_400_BAD_REQUEST)
 
-class Register(APIView):
+class registerUser(APIView):
+
+    def responseFunction(object):
+        message = f"{object} is not Provided"
+        return Response({'message': message},status=status.HTTP_400_BAD_REQUEST)
 
     def post(self,request,*args, **kwargs):
-        phone = request.data.get('Phone',None)
-        first = request.data.get('first',None)
-        last = request.data.get('last',None)
-        password = request.data.get('pass',None)
+        phone = request.data.get('phone',None)
+        first = request.data.get('firstName',None)
+        last = request.data.get('lastName',None)
+        password = request.data.get('password',None)
 
         if first is None:
-            return Response({'message': "First Name is not Provided"},status=status.HTTP_400_BAD_REQUEST)
+            return self.responseFunction("First Name")
         
         if last is None:
-            return Response({'message': "Last Name is not Provided"},status=status.HTTP_400_BAD_REQUEST)
+            return self.responseFunction("Last Name")
 
         if phone is None:
-            return Response({'message': "Phone is not Provided"},status=status.HTTP_400_BAD_REQUEST)
+            return self.responseFunction("Phone")
         
         if password is None:
-            return Response({'message': "Password is not Provided"},status=status.HTTP_400_BAD_REQUEST)
+            return self.responseFunction("Password")
 
         if User.objects.filter(Phone=phone).exists():
             return Response({'message':"Phone Number is already Registered"},status=status.HTTP_400_BAD_REQUEST)

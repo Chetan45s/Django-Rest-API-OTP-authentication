@@ -1,7 +1,7 @@
 import requests
 import random
 import time
-from All_Users.models import Profile 
+from accounts.models import Profile 
 import json
 
 url = 'https://2factor.in/API/V1/57c3084e-031c-11eb-9fa5-0200cd936042/SMS/+91'

@@ -1,7 +1,6 @@
-from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth import authenticate
 from rest_framework import serializers
-from All_Users.models import User, Profile
-# User = get_user_model()
+from accounts.models import User, Profile
 
 class RegisterSerializer(serializers.ModelSerializer):
 
